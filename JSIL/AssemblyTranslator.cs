@@ -383,6 +383,29 @@ namespace JSIL {
             }
         }
 
+        public static void GenerateHtmlHost (AssemblyManifest manifest, string assemblyPath, TranslationResult result) {
+            using (var ms = new MemoryStream())
+            using (var tw = new StreamWriter(ms, new UTF8Encoding(false))) {
+                tw.WriteLine("<!DOCTYPE html>");
+                tw.WriteLine("<html>");
+                tw.WriteLine("  <head>");
+                tw.WriteLine("    <title>{0}</title>", Path.GetFileName(assemblyPath).Replace("\\", "\\\\"));
+
+                tw.WriteLine("    <script src=\"mygg\"></script>");
+
+                tw.WriteLine("  </head>");
+                tw.WriteLine("  <body onload=\"onLoad()\">");
+                tw.WriteLine("  </body>");
+                tw.WriteLine("</html>");
+
+                tw.Flush();
+
+                result.HtmlHost = new ArraySegment<byte>(
+                    ms.GetBuffer(), 0, (int)ms.Length
+                );
+            }
+        }
+
         protected void OptimizeAll () {
             var pr = new ProgressReporter();
             if (Optimizing != null)

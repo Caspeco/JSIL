@@ -11,6 +11,7 @@ namespace JSIL {
         public readonly List<string> FileOrder = new List<string>();
         public readonly Dictionary<string, ArraySegment<byte>> Files = new Dictionary<string, ArraySegment<byte>>();
         public ArraySegment<byte> Manifest;
+        public ArraySegment<byte> HtmlHost;
 
         public IEnumerable<KeyValuePair<string, ArraySegment<byte>>> OrderedFiles {
             get {
@@ -70,11 +71,14 @@ namespace JSIL {
         public void WriteToDirectory (string path, string manifestPrefix = "") {
             if (Manifest.Array == null)
                 throw new Exception("AssemblyTranslator.GenerateManifest must be called first");
+            if (HtmlHost.Array == null)
+                throw new Exception("AssemblyTranslator.GenerateHtmlHost must be called first");
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             WriteBytesToFile(path, manifestPrefix + "manifest.js", Manifest);
+            WriteBytesToFile(path, manifestPrefix + "host.html", HtmlHost);
 
             foreach (var kvp in Files)
                 WriteBytesToFile(path, kvp.Key, kvp.Value);

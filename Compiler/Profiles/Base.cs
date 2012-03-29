@@ -17,6 +17,7 @@ namespace JSIL.Compiler.Profiles {
             var result = translator.Translate(assemblyPath, scanForProxies);
 
             AssemblyTranslator.GenerateManifest(translator.Manifest, assemblyPath, result);
+            AssemblyTranslator.GenerateHtmlHost(translator.Manifest, assemblyPath, result);
             return result;
         }
 
