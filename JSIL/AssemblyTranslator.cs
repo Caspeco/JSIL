@@ -384,15 +384,30 @@ namespace JSIL {
         }
 
         public static void GenerateHtmlHost (AssemblyManifest manifest, string assemblyPath, TranslationResult result) {
+            var appName = Path.GetFileName(assemblyPath).Replace("\\", "\\\\");
+            var entryAssembly = "";
+            var entryPoint = "";
+
             using (var ms = new MemoryStream())
             using (var tw = new StreamWriter(ms, new UTF8Encoding(false))) {
                 tw.WriteLine("<!DOCTYPE html>");
                 tw.WriteLine("<html>");
                 tw.WriteLine("  <head>");
-                tw.WriteLine("    <title>{0}</title>", Path.GetFileName(assemblyPath).Replace("\\", "\\\\"));
+                tw.WriteLine("    <title>{0}</title>", appName );
 
-                tw.WriteLine("    <script src=\"mygg\"></script>");
+                tw.WriteLine("    <script src=\"JSIL.Core\"></script>");
+                tw.WriteLine("    <script src=\"{0}.manifest.js\"></script>", appName);
 
+                foreach (var kvp in result.OrderedFiles)
+                {
+                    tw.WriteLine("    <script src=\"{0}\"></script>", kvp.Key.Replace("\\", "/"));
+                }
+
+                tw.WriteLine("    <script>");
+                tw.WriteLine("      function onLoad() {");
+                tw.WriteLine("        JSIL.Initialize();");
+                tw.WriteLine("        JSIL.GetAssembly(\"{0}\").{1}();", entryAssembly, entryPoint);
+                tw.WriteLine("    </script>");
                 tw.WriteLine("  </head>");
                 tw.WriteLine("  <body onload=\"onLoad()\">");
                 tw.WriteLine("  </body>");
